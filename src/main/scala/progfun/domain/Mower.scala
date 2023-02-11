@@ -2,7 +2,7 @@ package progfun.domain
 
 case class Mower(position: Position, instructions: List[Char]) {
   private val defaultDirections = List('N', 'E', 'S', 'W')
-  private def _updateDirectionOfPosition(
+  def updateDirectionOfPosition(
       currentPosition: Position,
       instruction: Char
   ): Position = {
@@ -31,7 +31,7 @@ case class Mower(position: Position, instructions: List[Char]) {
     }
   }
 
-  private def _updateCoordinateOfPosition(
+  def updateCoordinateOfPosition(
       currentPosition: Position,
       limit: Coordinate
   ): Position = {
@@ -82,20 +82,20 @@ case class Mower(position: Position, instructions: List[Char]) {
     case head :: Nil =>
       head match {
         case 'D' | 'G' =>
-          List(_updateDirectionOfPosition(currentPosition, head))
-        case 'A' => List(_updateCoordinateOfPosition(currentPosition, limit))
+          List(updateDirectionOfPosition(currentPosition, head))
+        case 'A' => List(updateCoordinateOfPosition(currentPosition, limit))
       }
     case head :: tail =>
       head match {
         case 'D' | 'G' =>
           getFinalPosition(
-            _updateDirectionOfPosition(currentPosition, head),
+            updateDirectionOfPosition(currentPosition, head),
             limit,
             tail
           )
         case 'A' =>
           getFinalPosition(
-            _updateCoordinateOfPosition(currentPosition, limit),
+            updateCoordinateOfPosition(currentPosition, limit),
             limit,
             tail
           )

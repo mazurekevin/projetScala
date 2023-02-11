@@ -9,7 +9,7 @@ import scala.io.Source
 object Main extends App {
 
   val fileName =
-    "D:\\ESGI\\2022-2023 5AL\\Programmation fonctionnelle\\projetScala\\src\\main\\dataEnter.txt"
+    "C:\\Users\\kevin\\Downloads\\template de projet Scala_SBT\\projet\\funprog-al\\src\\main\\dataEnter.txt"
   val lines = Source.fromFile(fileName).getLines()
   val values = lines.toList
 
