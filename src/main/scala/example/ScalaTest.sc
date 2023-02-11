@@ -1,7 +1,7 @@
 import scala.annotation.tailrec
 import scala.io.Source
 
-case class Coordinate(x: Int, y: Int)
+
 case class Position(point: Coordinate, direction: Char)
 case class Mower(position: Position, instructions: List[Char]) {
   private val defaultDirections = List('N', 'E', 'S', 'W')
@@ -107,66 +107,74 @@ for (mower <- funProg.mowers) {
   println(mower.getFinalPosition(mower.position, funProg.limit, mower.instructions))
 }
 
+sealed trait OutputType {
+  def print()
+  def write()
+}
+case class CsvOutput(funProg: FunProg) extends OutputType {
 
-def writeInCSV(funProg: FunProg) = {
-  println("numero;debut_x;debut_y;debut_direction;fin_x;fin_y;fin_direction;instructions")
-  val mowers = funProg.mowers
-  for (i <- mowers.indices) {
-    val mower = mowers(i)
+  override def print() = {
+    println("numero;debut_x;debut_y;debut_direction;fin_x;fin_y;fin_direction;instructions")
+    val mowers = funProg.mowers
+    for (i <- mowers.indices) {
+      val mower = mowers(i)
+      val finalPosition = mower.getFinalPosition(mower.position, funProg.limit, mower.instructions).head
+      println(s"${i + 1};${mower.position.point.x};${mower.position.point.y};${mower.position.direction};${finalPosition.point.x};${finalPosition.point.y};${finalPosition.direction};${mower.instructions.mkString}")
+    }
+  }
+  override def write(): Unit = {
+
+  }
+}
+case class JsonOutput(funProg: FunProg) extends OutputType {
+
+  private def _displayLimit(): String = {
+    s"""  "limite": {
+       |      "x": ${funProg.limit.x},
+       |      "y": ${funProg.limit.y}
+       |    },
+       |""".stripMargin
+  }
+
+  private def _displayCoordinate(position: Position): String = {
+    s""""point": {
+       |  "x": ${position.point.x},
+       |  "y": ${position.point.y}
+       |},
+       |"direction": ${position.direction}""".stripMargin
+  }
+
+  private def _displayMower(mower: Mower): String = {
     val finalPosition = mower.getFinalPosition(mower.position, funProg.limit, mower.instructions).head
-    println(s"${i+1};${mower.position.point.x};${mower.position.point.y};${mower.position.direction};${finalPosition.point.x};${finalPosition.point.y};${finalPosition.direction};${mower.instructions.mkString}")
+    s"""{
+       |   "debut": {
+       |     ${_displayCoordinate(mower.position)}
+       |   },
+       |   "instructions": "[${mower.instructions.mkString(",")}]",
+       |   "fin" : {
+       |     ${_displayCoordinate(finalPosition)}
+       |   }
+       |}""".stripMargin
+  }
+  override def print() = {
+    val list_string_mowers = for (mower <- funProg.mowers) yield _displayMower(mower)
+    println(
+      s"""{
+         |  ${_displayLimit()}
+         |  "tondeuses": [
+         |    ${list_string_mowers.mkString(",")}
+         |  ]
+         |}""".stripMargin)
+  }
+  override def write(): Unit = {
+
   }
 }
 
-writeInCSV(funProg)
+val json = JsonOutput(funProg)
+json.print()
 
 /**
- * liste coord
- * liste action
- *
- *
- * double boucle (listes)
- *  > init Mower()
- *
- * Funprog() {
- *   limit
- *   Liste mower
- * }
- *
- *
- *
- *
- * ALGO
- * - Bordure en faisant attention à la direction
- *
- *
- * Classes :
- * Pour l'input (lecture fichier / génération Mowers)
- * Pour les objects :
- *  > Mower = faire l'algo pour la position finale
- * Pour l'output
- *
- *
- *
- * Directions
- * (N E S W)
- *  0 1 2 3
- *
- * G = -1
- * D = +1
- *
- * % 4
- *
- *
- * Pour avancer :
- * A
- * Si direction = N : x, y+1
- * Si direction = E : x+1, y
- * Si direction = S : x, y-1
- * Si direction = W : x-1, y
- * Si x < 0 ou y < 0 ou x > limit ou y > limit = bouge pas
- *
- *
  *
  * ETAPES
  * Input File => Read file

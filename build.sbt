@@ -9,7 +9,7 @@ ThisBuild / scalafmtOnCompile := true
 
 fork in run := true
 connectInput in run := true
-mainClass in Compile := Some("fr.esgi.al.funprog.Main")
+mainClass in Compile := Some("funprog.Main")
 
 lazy val root = (project in file("."))
   .settings(
