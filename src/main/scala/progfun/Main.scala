@@ -1,26 +1,18 @@
 package fr.esgi.al.funprog
 
-import progfun.domain.FunProg
-import progfun.domain.Input
+import progfun.domain.{Input, Parser}
 import progfun.domain.output.{CsvOutput, JsonOutput}
-
-import scala.io.Source
 
 object Main extends App {
 
-  val fileName =
-    "C:\\Users\\kevin\\Downloads\\template de projet Scala_SBT\\projet\\funprog-al\\src\\main\\dataEnter.txt"
-  val lines = Source.fromFile(fileName).getLines()
-  val values = lines.toList
+  val fileName = {
+    "D:\\ESGI\\2022-2023 5AL\\Programmation fonctionnelle\\projetScala\\src\\main\\resources\\dataEnter.txt"
+  }
 
-  val limit = values.headOption.getOrElse("")
-  val actions = values.drop(1)
+  val input = Input(fileName)
+  val parser = Parser(input)
 
-  val input = Input()
-  val mowers = input.getMowersFromInput(actions)
-
-  val funProg =
-    FunProg(input.convertStringToCoordinate(limit), mowers)
+  val funProg = parser.parseInput()
 
   val json = JsonOutput(funProg)
   val csv = CsvOutput(funProg)
